@@ -227,13 +227,16 @@ export class GIF extends EventEmitter {
   }
 
   finishRendering(): void {
+    // Replace duplicate frames with the first instance
     for (let i = 0; i < this.imageParts.length; i++) {
       const frame = this.imageParts[i];
       if (frame && frame.indexOfFirstInGroup !== undefined) {
         this.imageParts[i] = this.imageParts[frame.indexOfFirstInGroup];
       }
     }
-    let len = 0;
+
+    // Compute the total output length.
+    let totalLength = 0;
     for (const frame of this.imageParts) {
       if (
         frame &&
@@ -241,11 +244,16 @@ export class GIF extends EventEmitter {
         frame.pageSize !== undefined &&
         frame.cursor !== undefined
       ) {
-        len += (frame.data.length - 1) * frame.pageSize + frame.cursor;
+        // Each frame contributes (number_of_full_pages * pageSize) plus the bytes in the last (partial) page.
+        totalLength += (frame.data.length - 1) * frame.pageSize + frame.cursor;
       }
     }
-    this.log(`rendering finished - filesize ${Math.round(len / 1000)}kb`);
-    const data = new Uint8Array(len);
+    this.log(
+      `rendering finished - filesize ${Math.round(totalLength / 1000)}kb`
+    );
+
+    // Allocate output buffer.
+    const data = new Uint8Array(totalLength);
     let offset = 0;
     for (const frame of this.imageParts) {
       if (
@@ -255,17 +263,21 @@ export class GIF extends EventEmitter {
         frame.cursor !== undefined
       ) {
         for (let i = 0; i < frame.data.length; i++) {
+          const page: Uint8Array = frame.data[i];
           if (i === frame.data.length - 1) {
-            // Copy only the valid bytes from the last page.
-            data.set(frame.data[i].subarray(0, frame.cursor), offset);
+            // Last page: copy only the valid bytes (up to frame.cursor)
+            data.set(page.subarray(0, frame.cursor), offset);
             offset += frame.cursor;
           } else {
-            data.set(frame.data[i], offset);
+            // Full page: copy the entire page (of length pageSize)
+            data.set(page, offset);
             offset += frame.pageSize;
           }
         }
       }
     }
+
+    // Create a Blob for the GIF image.
     const image = new Blob([data], { type: "image/gif" });
     this.emit("finished", image, data);
   }
