@@ -107,7 +107,7 @@ export class GIF extends EventEmitter {
       this.setOption("height", image.height);
     }
     if (typeof ImageData !== "undefined" && image instanceof ImageData) {
-      frame.data = new Uint8Array(image.data.buffer);
+      frame.data = image.data;
     } else if (
       ((typeof CanvasRenderingContext2D !== "undefined" &&
         image instanceof CanvasRenderingContext2D) ||
@@ -118,7 +118,7 @@ export class GIF extends EventEmitter {
       frame.context = image;
     } else if (image.childNodes) {
       if (options.copy) {
-        frame.data = new Uint8Array(this.getImageData(image).buffer);
+        frame.data = this.getImageData(image);
       } else {
         frame.image = image;
       }
