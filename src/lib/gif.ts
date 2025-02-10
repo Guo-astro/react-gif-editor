@@ -226,7 +226,7 @@ export class GIF extends EventEmitter {
     }
   }
 
-  private finishRendering(): void {
+  finishRendering(): void {
     for (let i = 0; i < this.imageParts.length; i++) {
       const frame = this.imageParts[i];
       if (frame && frame.indexOfFirstInGroup !== undefined) {
@@ -255,8 +255,14 @@ export class GIF extends EventEmitter {
         frame.cursor !== undefined
       ) {
         for (let i = 0; i < frame.data.length; i++) {
-          data.set(frame.data[i], offset);
-          offset += i === frame.data.length - 1 ? frame.cursor : frame.pageSize;
+          if (i === frame.data.length - 1) {
+            // Copy only the valid bytes from the last page.
+            data.set(frame.data[i].subarray(0, frame.cursor), offset);
+            offset += frame.cursor;
+          } else {
+            data.set(frame.data[i], offset);
+            offset += frame.pageSize;
+          }
         }
       }
     }
