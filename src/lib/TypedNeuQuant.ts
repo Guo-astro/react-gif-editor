@@ -18,7 +18,6 @@ export class TypedNeuQuant {
   private static readonly intbiasshift = 16; // bias for fractions
   private static readonly intbias = 1 << TypedNeuQuant.intbiasshift;
   private static readonly gammashift = 10;
-  private static readonly gamma = 1 << TypedNeuQuant.gammashift;
   private static readonly betashift = 10;
   private static readonly beta =
     TypedNeuQuant.intbias >> TypedNeuQuant.betashift; // beta = 1/1024

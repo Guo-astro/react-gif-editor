@@ -18,7 +18,6 @@ export class NeuQuant {
   private static intbiasshift = 16;
   private static intbias = 1 << NeuQuant.intbiasshift;
   private static gammashift = 10;
-  private static gamma = 1 << NeuQuant.gammashift;
   private static betashift = 10;
   private static beta = NeuQuant.intbias >> NeuQuant.betashift;
   private static betagamma =
@@ -30,7 +29,6 @@ export class NeuQuant {
   private static radiusdec = 30;
   private static alphabiasshift = 10;
   private static initalpha = 1 << NeuQuant.alphabiasshift;
-  private alphadec = 0;
   private static radbiasshift = 8;
   private static radbias = 1 << NeuQuant.radbiasshift;
   private static alpharadbshift =
@@ -154,7 +152,6 @@ export class NeuQuant {
           smallval = q[1];
         }
       }
-      const q = this.network[smallpos];
       if (i !== smallpos) {
         [this.network[i], this.network[smallpos]] = [
           this.network[smallpos],

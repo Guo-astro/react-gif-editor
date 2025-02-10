@@ -1,5 +1,4 @@
 const ua: string = navigator.userAgent.toLowerCase();
-const platform: string = navigator.platform.toLowerCase();
 const match = ua.match(
   /(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/
 );
